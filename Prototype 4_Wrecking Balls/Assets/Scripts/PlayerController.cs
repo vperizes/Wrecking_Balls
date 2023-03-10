@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
 
     private GameObject tmpRocket; //used to spawn rocket prefab
     private Coroutine powerupCountdown;
-    private GameManager gameManager;
+   
 
     //Rigidbody var
     private Rigidbody playerRb;
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        
 
     }
 
@@ -62,13 +62,13 @@ public class PlayerController : MonoBehaviour
 
         if (transform.position.x > outofboundsX || transform.position.x < -outofboundsX)
         {
-            gameManager.GameOver();
+            
             Destroy(gameObject);
 
         }
         else if (transform.position.z > outofboundsZ || transform.position.z < -outofboundsZ)
         {
-            gameManager.GameOver();
+            
             Destroy(gameObject);
 
         }
@@ -152,7 +152,7 @@ public class PlayerController : MonoBehaviour
     {
         foreach (var enemy in FindObjectsOfType<Enemy>())
         {
-            tmpRocket = Instantiate(projectilePrefab, transform.position + Vector3.up, Quaternion.identity);
+            tmpRocket = Instantiate(projectilePrefab, transform.position + Vector3.forward, Quaternion.identity);
             tmpRocket.GetComponent<ProjectileBehaviour>().Fire(enemy.transform);
         }
     }

@@ -7,29 +7,26 @@ public class SpawnManager : MonoBehaviour
 
     public GameObject[] enemyPrefabs;
     public GameObject[] powerUpPrefabs;
-    private GameManager gameManager;
+
 
 
     private float spawnRange = 9.0f;
-    private int enemyCount;
-    public int waveCount = 0;
+    public int enemyCount;
+    public int waveCount = 1;
 
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        
+
+        SpawnEnemyWave(waveCount);
+        SpawnPowerUp();
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateEnemyCount();
-    }
-
-    public void UpdateEnemyCount()
-    {
-
         enemyCount = FindObjectsOfType<Enemy>().Length;
 
         if (enemyCount == 0)
@@ -38,30 +35,25 @@ public class SpawnManager : MonoBehaviour
             SpawnEnemyWave(waveCount);
             SpawnPowerUp();
         }
-
     }
+
 
     public void SpawnPowerUp()
     {
-        if (gameManager.isGameActive == true)
-        {
-            int powerUpIndex = Random.Range(0, powerUpPrefabs.Length);
-            Instantiate(powerUpPrefabs[powerUpIndex], GenerateSpawnPosition(), powerUpPrefabs[powerUpIndex].transform.rotation);
-        }
+
+        int powerUpIndex = Random.Range(0, powerUpPrefabs.Length);
+        Instantiate(powerUpPrefabs[powerUpIndex], GenerateSpawnPosition(), powerUpPrefabs[powerUpIndex].transform.rotation);
 
     }
 
     public void SpawnEnemyWave(int enemiesToSpawn)
     {
-        if (gameManager.isGameActive == true)
-        {
-            for (int i = 0; i < enemiesToSpawn; i++)
-            {
-                int enemyIndex = Random.Range(0, enemyPrefabs.Length);
-                Instantiate(enemyPrefabs[enemyIndex], GenerateSpawnPosition(), enemyPrefabs[enemyIndex].transform.rotation);
-            }
-        }
 
+        for (int i = 0; i < enemiesToSpawn; i++)
+        {
+            int enemyIndex = Random.Range(0, enemyPrefabs.Length);
+            Instantiate(enemyPrefabs[enemyIndex], GenerateSpawnPosition(), enemyPrefabs[enemyIndex].transform.rotation);
+        }
     }
 
 

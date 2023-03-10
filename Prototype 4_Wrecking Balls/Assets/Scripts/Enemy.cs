@@ -2,16 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnemyType { None, Hard, ExtraHard }
+
 public class Enemy : MonoBehaviour
 {
 
     private GameObject player;
     private Rigidbody enemyRb;
-    private GameManager gameManager;
-
+    [SerializeField] EnemyType currentEnemy = EnemyType.None;
 
     public float speed;
-    private float forceMultiplier = 5.0f;
+    private float forceMultiplier = 2.0f;
     public int points;
 
 
@@ -20,42 +21,30 @@ public class Enemy : MonoBehaviour
     {
         enemyRb = GetComponent<Rigidbody>();
         player = GameObject.Find("Player");
-
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (gameManager.isGameActive == true)
+        //look direction is returning a vector that represents the distance between the playerTransform and enemy. This tells the enemy where to move
+        Vector3 lookDirection = (player.transform.position - transform.position).normalized;
+        if(currentEnemy == EnemyType.ExtraHard)
         {
-            //look direction is returning a vector that represents the distance between the player and enemy. This tells the enemy where to move
-            Vector3 lookDirection = (player.transform.position - transform.position).normalized;
-
+            enemyRb.AddForce(lookDirection * forceMultiplier * speed);
+        }
+        else if (currentEnemy == EnemyType.Hard)
+        {
             enemyRb.AddForce(lookDirection * speed);
-
-            if (transform.position.y < -3)
-            {
-                Destroy(gameObject);
-                gameManager.UpdateScore(points);
-            }
-
         }
-
-    }
-
-
-    //Applies an additional force multiplier if a Hard Enemy collides with the player
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") && gameObject.CompareTag("HardEnemy"))
+                
+        if (transform.position.y < -3)
         {
-            Vector3 lookDirection = (player.transform.position - transform.position).normalized;
-            enemyRb.AddForce(lookDirection * forceMultiplier, ForceMode.Impulse);
+            Destroy(gameObject);
+            
         }
 
     }
-
 
 }
