@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] EnemyType currentEnemy = EnemyType.None;
 
     public float speed;
-    private float forceMultiplier = 2.0f;
+    [SerializeField] float forceMultiplier;
     public int points;
 
 
@@ -46,6 +46,7 @@ public class Enemy : MonoBehaviour
             if (transform.position.y < -3)
             {
                 Destroy(gameObject);
+                gameManager.AddScore(points);
 
             }
         }
