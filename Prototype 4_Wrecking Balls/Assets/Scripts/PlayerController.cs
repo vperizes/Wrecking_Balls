@@ -10,12 +10,13 @@ public class PlayerController : MonoBehaviour
     public GameObject powerupIndicator;
     public GameObject extraPowerupIndicator;
     public GameObject projectilePrefab; //used to assign rocket prefab
+    private GameManager gameManager;
 
     public PowerUpType currentPowerUp = PowerUpType.None; //this is calling the power up type from the powerup script and setting it to none
 
     private GameObject tmpRocket; //used to spawn rocket prefab
-    private Coroutine powerupCountdown;
    
+
 
     //Rigidbody var
     private Rigidbody playerRb;
@@ -37,7 +38,8 @@ public class PlayerController : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
-        
+        gameManager = GameManager._gameManager;
+
 
     }
 
@@ -62,14 +64,16 @@ public class PlayerController : MonoBehaviour
 
         if (transform.position.x > outofboundsX || transform.position.x < -outofboundsX)
         {
-            
+
             Destroy(gameObject);
+            gameManager.GameOver();
 
         }
         else if (transform.position.z > outofboundsZ || transform.position.z < -outofboundsZ)
         {
-            
+
             Destroy(gameObject);
+            gameManager.GameOver();
 
         }
     }
@@ -77,36 +81,35 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
+       
         if (other.CompareTag("Powerup"))
         {
             hasPowerup = true;
+            hasExtraPowerup = false;
             currentPowerUp = other.gameObject.GetComponent<PowerUp>().powerUpType; //specificaly gets the powerup script and its enum variable powerUpType
             powerupIndicator.gameObject.SetActive(true);
             Destroy(other.gameObject);
 
 
-            if (powerupCountdown != null)
+            if (StartCoroutine(PowerupCountdownRoutine()) != null)
             {
-                StopCoroutine(powerupCountdown);
+                StopCoroutine(PowerupCountdownRoutine());
             }
 
-            powerupCountdown = StartCoroutine(PowerupCountdownRoutine());
         }
 
         if (other.CompareTag("ExtraPowerup"))
         {
             hasExtraPowerup = true;
+            hasPowerup = false;
             currentPowerUp = other.gameObject.GetComponent<PowerUp>().powerUpType; //specificaly gets the powerup script and its enum variable powerUpType
             extraPowerupIndicator.gameObject.SetActive(true);
             Destroy(other.gameObject);
 
-            if (powerupCountdown != null)
+            if (StartCoroutine(PowerupCountdownRoutine()) != null)
             {
-                StopCoroutine(powerupCountdown);
+                StopCoroutine(PowerupCountdownRoutine());
             }
-
-            powerupCountdown = StartCoroutine(PowerupCountdownRoutine());
 
         }
 
@@ -115,16 +118,15 @@ public class PlayerController : MonoBehaviour
     //Sets count down timer independant of update method for the power up
     IEnumerator PowerupCountdownRoutine()
     {
-        if (gameObject.CompareTag("Powerup"))
+        if (currentPowerUp == PowerUpType.Pushback)
         {
             yield return new WaitForSeconds(7);
             hasPowerup = false;
             currentPowerUp = PowerUpType.None;
             powerupIndicator.gameObject.SetActive(false);
-            
-        }
 
-        if (gameObject.CompareTag("ExtraPowerup"))
+        }
+        else if (currentPowerUp == PowerUpType.Rockets)
         {
             yield return new WaitForSeconds(7);
             hasExtraPowerup = false;

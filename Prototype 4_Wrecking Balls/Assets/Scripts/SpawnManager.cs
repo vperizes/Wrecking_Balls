@@ -7,6 +7,7 @@ public class SpawnManager : MonoBehaviour
 
     public GameObject[] enemyPrefabs;
     public GameObject[] powerUpPrefabs;
+    private GameManager gameManager;
 
 
 
@@ -17,7 +18,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        gameManager = GameManager._gameManager;
         SpawnEnemyWave(waveCount);
         SpawnPowerUp();
 
@@ -27,14 +28,18 @@ public class SpawnManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        enemyCount = FindObjectsOfType<Enemy>().Length;
-
-        if (enemyCount == 0)
+        if (gameManager.isGameActive)
         {
-            waveCount++;
-            SpawnEnemyWave(waveCount);
-            SpawnPowerUp();
+            enemyCount = FindObjectsOfType<Enemy>().Length;
+
+            if (enemyCount == 0)
+            {
+                waveCount++;
+                SpawnEnemyWave(waveCount);
+                SpawnPowerUp();
+            }
         }
+        
     }
 
 
