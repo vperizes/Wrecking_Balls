@@ -126,6 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentEnemy: 2
-  speed: 3
+  speed: 1
   forceMultiplier: 2
   points: 10

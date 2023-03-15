@@ -9,7 +9,8 @@ TagManager:
   - PlayerGoal
   - HardEnemy
   - Rocket
-  - ExtraPowerup
+  - RocketPowerup
+  - SmashPowerup
   layers:
   - Default
   - TransparentFX

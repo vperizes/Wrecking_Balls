@@ -9,27 +9,25 @@ public class PlayerController : MonoBehaviour
     private GameObject focalPoint;
     public GameObject powerupIndicator;
     public GameObject extraPowerupIndicator;
+    public GameObject smashPowerupIndicator;
     public GameObject projectilePrefab; //used to assign rocket prefab
-    private GameManager gameManager;
-
-    public PowerUpType currentPowerUp = PowerUpType.None; //this is calling the power up type from the powerup script and setting it to none
-
     private GameObject tmpRocket; //used to spawn rocket prefab
-   
-
+    public PowerUpType currentPowerUp = PowerUpType.None; //this is calling the power up type from the powerup script and setting it to none
+    private GameManager gameManager;
 
     //Rigidbody var
     private Rigidbody playerRb;
     private Rigidbody enemyRb;
 
 
-    //Variables
-    public float speed;
-    private float outofboundsX = 15.5f;
-    private float outofboundsZ = 13.5f;
-    private float forwardInput;
+    //bools
     public bool hasPowerup = false;
     public bool hasExtraPowerup = false;
+    public bool hasSmashPowerup = false;
+
+    public float speed;
+    private int yBound = -3;
+    private float forwardInput;
     private float powerupStrength = 15.0f;
     private Vector3 powerupIndicatorOffset;
 
@@ -44,7 +42,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * speed * forwardInput);
@@ -54,34 +52,32 @@ public class PlayerController : MonoBehaviour
         powerupIndicatorOffset = new Vector3(0, 0.5f, 0);
         powerupIndicator.transform.position = transform.position - powerupIndicatorOffset;
         extraPowerupIndicator.transform.position = transform.position - powerupIndicatorOffset;
+        smashPowerupIndicator.transform.position = transform.position - powerupIndicatorOffset;
 
         if (currentPowerUp == PowerUpType.Rockets && Input.GetKeyDown(KeyCode.F))
         {
             LaunchRockets();
         }
 
-        //This block of code defines parameters for game over
-
-        if (transform.position.x > outofboundsX || transform.position.x < -outofboundsX)
+        if (currentPowerUp == PowerUpType.Smash && Input.GetKeyDown(KeyCode.Space))
         {
+            Smash();
+        }
 
+        //Defines game over if player off platform
+
+        if (transform.position.y < yBound)
+        {
             Destroy(gameObject);
             gameManager.GameOver();
-
         }
-        else if (transform.position.z > outofboundsZ || transform.position.z < -outofboundsZ)
-        {
-
-            Destroy(gameObject);
-            gameManager.GameOver();
-
-        }
+       
     }
 
 
     private void OnTriggerEnter(Collider other)
     {
-       
+
         if (other.CompareTag("Powerup"))
         {
             hasPowerup = true;
@@ -98,7 +94,7 @@ public class PlayerController : MonoBehaviour
 
         }
 
-        if (other.CompareTag("ExtraPowerup"))
+        if (other.CompareTag("RocketPowerup"))
         {
             hasExtraPowerup = true;
             hasPowerup = false;
@@ -113,6 +109,14 @@ public class PlayerController : MonoBehaviour
 
         }
 
+        if (other.CompareTag("SmashPowerup"))
+        {
+            hasSmashPowerup = true;
+            currentPowerUp = other.gameObject.GetComponent<PowerUp>().powerUpType;
+            smashPowerupIndicator.gameObject.SetActive(true);
+            Destroy(other.gameObject);
+        }
+
     }
 
     //Sets count down timer independant of update method for the power up
@@ -120,7 +124,7 @@ public class PlayerController : MonoBehaviour
     {
         if (currentPowerUp == PowerUpType.Pushback)
         {
-            yield return new WaitForSeconds(7);
+            yield return new WaitForSeconds(6);
             hasPowerup = false;
             currentPowerUp = PowerUpType.None;
             powerupIndicator.gameObject.SetActive(false);
@@ -128,10 +132,15 @@ public class PlayerController : MonoBehaviour
         }
         else if (currentPowerUp == PowerUpType.Rockets)
         {
-            yield return new WaitForSeconds(7);
+            yield return new WaitForSeconds(6);
             hasExtraPowerup = false;
             currentPowerUp = PowerUpType.None;
             extraPowerupIndicator.gameObject.SetActive(false);
+        }
+        else if (currentPowerUp == PowerUpType.Smash)
+        {
+            yield return new WaitForSeconds(6);
+            hasSmashPowerup = false;
         }
 
     }
@@ -156,6 +165,11 @@ public class PlayerController : MonoBehaviour
             tmpRocket = Instantiate(projectilePrefab, transform.position + Vector3.forward, Quaternion.identity);
             tmpRocket.GetComponent<ProjectileBehaviour>().Fire(enemy.transform);
         }
+    }
+
+    void Smash()
+    {
+        playerRb.AddForce(Vector3.up * 20f, ForceMode.Impulse);
     }
 }
 
