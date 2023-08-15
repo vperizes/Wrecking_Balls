@@ -13,10 +13,11 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI scoreText;
     public GameObject gameOverScreen;
+    public GameObject pauseMenu;
 
     private int score;
     public bool isGameActive;
-    // Start is called before the first frame update
+    private bool isGamePaused;
     
     
     public void Awake()
@@ -26,9 +27,21 @@ public class GameManager : MonoBehaviour
         score = 0;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (isGamePaused)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
+
         scoreText.text = "Score: " + score.ToString();
     }
 
@@ -45,7 +58,21 @@ public class GameManager : MonoBehaviour
 
     public void RestartScene()
     {
-        SceneManager.LoadScene("Prototype 4");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void PauseGame()
+    {
+        isGamePaused = true;
+        Time.timeScale = 0f;
+        pauseMenu.SetActive(true);
+    }
+
+    private void ResumeGame()
+    {
+        isGamePaused = false;
+        Time.timeScale = 1.0f;
+        pauseMenu.SetActive(false);
     }
 
 }
