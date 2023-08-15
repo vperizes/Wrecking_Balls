@@ -2,11 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
-   public void LoadGame()
+    public Button startButton;
+
+    public void Start()
     {
-        SceneManager.LoadScene("Prototype 4");
+        startButton.onClick.AddListener(LoadGame);
+    }
+
+    public void LoadGame()
+    {
+        SceneManager.LoadScene("WreckingBalls");
     }
 }
