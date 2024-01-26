@@ -1,4 +1,4 @@
-# Prototype4-Wrecking_Balls
+# Wrecking_Balls
  Video Game. Player needs to avoid being kicked off of the play platform by a number of challenging enemies. Made with Unity version 2020.3.24f1.
 
  Player movement/controls:
